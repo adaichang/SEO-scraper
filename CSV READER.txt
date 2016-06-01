@@ -1,0 +1,38 @@
+import urllib
+import csv
+
+with open('urlFile.csv') as f:
+    reader = csv.reader(f)
+
+    for rec in reader:
+        htmlfile = urllib.urlopen(rec[0])
+		
+		
+		
+#filename = "/my/directory/filename.txt"
+#dir = os.path.dirname(filename)
+		
+import os
+filepath = '/my/directory/filename.txt'
+directory = os.path.dirname(filepath)
+import errno
+if not os.path.exists(directory):
+    try:
+        os.makedirs(directory)
+    except OSError as error:
+        if error.errno != errno.EEXIST:
+            raise
+with open(filepath, 'w') as my_file:
+    do_stuff(my_file)
+	
+	
+#http://stackoverflow.com/questions/27832648/no-such-file-or-directory-from-os-mkdir
+#safe_name = i.text.replace('/', '_')
+#os.mkdir(os.path.join(file_directory, safe_name))	
+#http://stackoverflow.com/questions/18502119/python-to-save-web-pages
+#https://docs.python.org/3/library/csv.html
+#http://stackoverflow.com/questions/19750225/scraping-multiple-webpages-and-writing-to-a-csv-file
+#http://www.blog.pythonlibrary.org/2014/02/26/python-101-reading-and-writing-csv-files/
+
+
+#http://stackoverflow.com/questions/16503560/read-specific-columns-from-csv-file-with-python-csv?rq=1

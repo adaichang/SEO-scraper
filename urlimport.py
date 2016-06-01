@@ -3,7 +3,56 @@ import requests
 import csv
 import urllib2
 from lxml import etree
-
+import os
+import xml.dom.minidom
+import sys
+from urlparse import urlparse
+from posixpath import basename, dirname
+class XpathParser:
+    def __init__(self):
+        pass
+    
+    def sendRequest(self,link):
+        print('sending request to '+ link)
+        html = requests.get(link,timeout=3).text.encode(encoding='UTF-8',errors='strict')
+        #print('request completed')
+        html = "".join(html.split("\n"))
+        html = "".join(html.split("\t"))
+        html = " ".join(html.split("  "))
+        html = " ".join(html.split("  "))
+        #html = xml.dom.minidom.parse(html) or xml.dom.minidom.parseString(xml_string)
+        #pretty_xml_as_string = html.toprettyxml()
+        return html
+    
+    def load(self,links,xpath):
+        url=links.split("\r\n")
+        data = {}
+        data['scrapResult'] = []
+        for link in url:
+            tree = etree.HTML(self.sendRequest(link))
+            result = {}
+            result["link"] = link
+            result["result"] = self.start(tree,xpath)
+            data['scrapResult'].append(result)
+        return data
+        
+    def start(self,tree,xpath):
+        result = []
+        for data in xpath['scrap']:
+            if data['name'] and data['value']:
+                dect = {}
+                value,name = "",""
+                name = data['name']
+                element = tree.xpath(data['value'])
+                if len(element):
+                    #print(element)
+                    value = element[0].text
+                    if not value:
+                        value = etree.tostring(element[0])
+                dect['name'] = name
+                dect['value'] = value
+                result.append(dect)
+        return result       
 
 class csvImport:
     def __init__(self,filename):
@@ -31,63 +80,15 @@ class csvImport:
 # (k, v), = url_listing[0].items()
 #    print k
 # url_listing = csvImport('test_xpath.csv').retrieveDataFromCSV()
-
-
-
-class XpathParser:
-    def __init__(self):
-        pass
-
-    def sendRequest(self,link):
-        print('sending request to '+ link)
-        html = requests.get(link,timeout=5).text.encode(encoding='UTF-8',errors='strict')
-        print('request completed')
-        html = "".join(html.split("\n"))
-        html = "".join(html.split("\t"))
-        html = " ".join(html.split("  "))
-        html = " ".join(html.split("  "))
-        return html
-
-    def load(self,links,xpath):
-        url=links.split("\r\n")
-        data = {}
-        data['scrapResult'] = []
-        for link in url:
-            tree = etree.HTML(self.sendRequest(link))
-            result = {}
-            result["link"] = link
-            result["result"] = self.start(tree,xpath)
-            data['scrapResult'].append(result)
-        return data
-
-    def start(self,tree,xpath):
-        result = []
-        for data in xpath['scrap']:
-            if data['name'] and data['value']:
-                dect = {}
-                value,name = "",""
-                name = data['name']
-                element = tree.xpath(data['value'])
-                if len(element):
-                    print(element)
-                    value = element[0].text
-                    if not value:
-                        value = etree.tostring(element[0])
-                dect['name'] = name
-                dect['value'] = value
-                result.append(dect)
-        return result
-
-
 url_listing = csvImport('test_config.csv').retrieveDataFromCSV()
-url = []
+urls = []
 title_xpath = []
 description_xpath = []
 caption_xpath = []
 
 for url_listing_lists in url_listing:
     page_url_topic, page_url = url_listing_lists.items()[3]          #[3] page url , [2] title , [1] caption  [0] metadescription
-    url.append(page_url)
+    urls.append(page_url)
 
 for title_listing_lists in url_listing:
     title, title_xpath_data = title_listing_lists.items()[2]          #[3] page url ; [2] title ; [1] caption ; [0] metadescription
@@ -104,27 +105,46 @@ for caption_listing_lists in url_listing:
 print title_xpath
 print description_xpath
 print caption_xpath
-print url
+print urls
 
-import sys
 filename = 'dynamic_url.csv'
 with open(filename, 'rb') as f:
     reader = csv.reader(f)
     try:
         for row in reader:
-           	r1 =str(row)[1:-1]
+           	r2 =str(row)[1:-1]
+		r1 = r2.strip("'")
 		print r1
+		xpath = {'scrap':[{'name':'link','value':'//*'}]}
+#xpath = {'scrap':[{'name':'link','value':'//*[@id="jsid-featured-sidebar-tail"]/section[3]/h2'}]}
+#strtowrite = XpathParser().load(url,xpath)
+		xparsee= XpathParser().load(r1,xpath)
+		print(xparsee)
+		xxx= str(xparsee)
+		segments = r1.rpartition('/')
+		file_name = segments[2]
+		script_dir = os.path.dirname(os.path.abspath(__file__))
+		dest_dir = os.path.join(script_dir, segments[2])
+#dest_dir = os.path.join(script_dir)
+#test 000
 		slashparts = r1.split('/')
 		basename = '/'.join(slashparts[:3]) + '/'
 # All except the last one
 		dirname = '/'.join(slashparts[:-1]) + '/'
-		print 'slashparts = %s' % slashparts
+		print 'slashparts = %s' % slashparts[-1]
 		print 'basename = %s' % basename
 		print 'dirname = %s' % dirname
+		try:
+			os.makedirs(dest_dir)
+		except OSError:
+			pass # already exists
+		path = os.path.join(dest_dir, file_name)
+		with open(path, 'wb') as stream:
+			stream.write(xxx)
     except csv.Error as e:
         sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 print row
-import os
+'''import os
 import errno
 
 def make_sure_path_exists(path):
@@ -132,7 +152,7 @@ def make_sure_path_exists(path):
         os.makedirs(path)
     except OSError as exception:
         if exception.errno != errno.EEXIST or not os.path.isdir(path):
-            raise
+            raise'''
 # url=["http://www.w3schools.com/","http://www.w3schools.com/html/default.asp"]
 # url="http://www.w3schools.com/"
 # url="http://www.w3schools.com/html/default.asp"
