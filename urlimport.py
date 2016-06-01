@@ -4,7 +4,7 @@ import csv
 import urllib2
 from lxml import etree
 import os
-import xml.dom.minidom
+#import xml.dom.minidom
 import sys
 from urlparse import urlparse
 from posixpath import basename, dirname
@@ -112,38 +112,38 @@ with open(filename, 'rb') as f:
     reader = csv.reader(f)
     try:
         for row in reader:
-           	r2 =str(row)[1:-1]
-		r1 = r2.strip("'")
-		print r1
-		xpath = {'scrap':[{'name':'link','value':'//*'}]}
+            r2 =str(row)[1:-1]
+            r1 = r2.strip("'")
+            print r1
+            xpath = {'scrap':[{'name':'link','value':'//*'}]}
 #xpath = {'scrap':[{'name':'link','value':'//*[@id="jsid-featured-sidebar-tail"]/section[3]/h2'}]}
 #strtowrite = XpathParser().load(url,xpath)
-		xparsee= XpathParser().load(r1,xpath)
-		print(xparsee)
-		xxx= str(xparsee)
-		segments = r1.rpartition('/')
-		file_name = segments[2]
-		script_dir = os.path.dirname(os.path.abspath(__file__))
-		dest_dir = os.path.join(script_dir, segments[2])
+            xparsee= XpathParser().load(r1,xpath)
+            print(xparsee)
+            xxx= str(xparsee)
+            segments = r1.rpartition('/')
+            file_name = segments[2]
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            dest_dir = os.path.join(script_dir, segments[2])
 #dest_dir = os.path.join(script_dir)
-#test 000
-		slashparts = r1.split('/')
-		basename = '/'.join(slashparts[:3]) + '/'
+#test 000safe_name = r1.text.replace('/', '_')
+            slashparts = r1.split('/')
+            basename = '/'.join(slashparts[:3]) + '/'
 # All except the last one
-		dirname = '/'.join(slashparts[:-1]) + '/'
-		print 'slashparts = %s' % slashparts[-1]
-		print 'basename = %s' % basename
-		print 'dirname = %s' % dirname
-		try:
-			os.makedirs(dest_dir)
-		except OSError:
-			pass # already exists
-		path = os.path.join(dest_dir, file_name)
-		with open(path, 'wb') as stream:
-			stream.write(xxx)
+            dirname = '/'.join(slashparts[:-1]) + '/'
+        print 'slashparts = %s' % slashparts[-1]
+        print 'basename = %s' % basename
+        print 'dirname = %s' % dirname
+        try:
+            os.makedirs(dest_dir)
+        except OSError:
+            pass # already exists
+            path = os.path.join(dest_dir, file_name)
+            with open(path, 'wb') as stream:
+                stream.write(xxx)
     except csv.Error as e:
         sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
-print row
+#print row
 '''import os
 import errno
 
@@ -163,9 +163,9 @@ def make_sure_path_exists(path):
 #                 {'name':'title','value':'/html/head/title'}]}
 
 # for urls in url:
-    # xpath = {'scrap':[{'name':'title','value':'/html/head/title'},
-    #                {'name':'meta_description','value':'/html/head/meta[2]'},
-    #                {'name':'caption_field','value':'//*[@id="c4tab1"]'}]}
-    # print(XpathParser().load(urls,xpath))
-    # print(XpathParser().load(url_seperator[1],xpath))
-    # print (XpathParser().load(urls,xpath))
+# xpath = {'scrap':[{'name':'title','value':'/html/head/title'},
+#                {'name':'meta_description','value':'/html/head/meta[2]'},
+#                {'name':'caption_field','value':'//*[@id="c4tab1"]'}]}
+# print(XpathParser().load(urls,xpath))
+# print(XpathParser().load(url_seperator[1],xpath))
+# print (XpathParser().load(urls,xpath))
