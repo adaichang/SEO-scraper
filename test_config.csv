@@ -1,0 +1,5 @@
+page_type,identifier,title_xpath,description_xpath,caption_xpath,lower_text_xpath
+product,"//*[@id=""RightColumnHome""]/div[3]/table/tbody/tr[1]/td[1]/table/tbody/tr[1]/td[3]/div[3]/text()",/html/head/title,/html/head/meta[2],"//*[@id=""sctabinfo""]/div[1]/div",
+category,"//*[@id=""RightColumnHome""]/div[3]/table/tbody/tr[3]",/html/head/title,/html/head/meta[2],,"//*[@id=""RightColumnHome""]/div[3]/table/tbody/tr[2]/td"
+homepage,http://www.skygeek.com/,/html/head/title,/html/head/meta[2],,"//*[@id=""RightColumnHome""]/table/tbody/tr[3]/td/div"
+sub ,identifierData,title,descriptio,caption,lower

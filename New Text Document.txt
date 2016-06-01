@@ -1,0 +1,7 @@
+def get_urls_from_csv():
+    with open('websites.csv', 'rbU') as csv_file:
+        data = csv.reader(csv_file)
+        scrapurls = []
+        for row in data:
+            scrapurls.append(row)
+        return scrapurls
